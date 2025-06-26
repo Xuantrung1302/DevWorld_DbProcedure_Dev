@@ -1,6 +1,6 @@
-ALTER PROCEDURE SP_GetInvoiceByStudentID
+ALTER PROCEDURE [dbo].[SP_GetInvoiceByStudentID]
     @StudentID VARCHAR(10),
-	@SemesterID VARCHAR(10)
+	@SemesterID VARCHAR(10) = null
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -15,7 +15,7 @@ BEGIN
         Paid
     FROM [dbo].[INVOICE] I
 		INNER JOIN STUDENT S ON S.StudentID = I.StudentID
-    WHERE I.StudentID = @StudentID AND SemesterID = @SemesterID;
+    WHERE I.StudentID = @StudentID AND( SemesterID = @SemesterID OR @SemesterID is null);
 
     RETURN 0;
 END;
