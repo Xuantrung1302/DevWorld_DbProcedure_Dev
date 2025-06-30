@@ -17,6 +17,5 @@ BEGIN
     --IF @@ROWCOUNT = 0
     --    THROW 50001, 'Không tìm thấy hóa đơn để cập nhật.', 1;
 
-    RETURN 0;
 END;
 GO
