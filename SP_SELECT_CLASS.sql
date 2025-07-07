@@ -7,8 +7,8 @@ GO
 
 ALTER PROCEDURE [dbo].[SP_SELECT_CLASS]
     @ClassID UNIQUEIDENTIFIER = NULL,
-    @SubjectID VARCHAR(10) = NULL,
-    @SemesterStatus NVARCHAR(20) = NULL
+    @SubjectID VARCHAR(10) = NULL
+    --@SemesterStatus NVARCHAR(20) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -23,7 +23,7 @@ BEGIN
         C.DaysOfWeek,
         S.SubjectName,
         Sem.SemesterName,
-        Sem.Status AS SemesterStatus,
+        --Sem.Status AS SemesterStatus,
         T.FullName AS TeacherName
     FROM CLASS C
     INNER JOIN SUBJECT S ON C.SubjectID = S.SubjectID
@@ -32,6 +32,6 @@ BEGIN
     WHERE 
         (@ClassID IS NULL OR C.ClassID = @ClassID)
         AND (@SubjectID IS NULL OR S.SubjectID = @SubjectID)
-        AND (@SemesterStatus IS NULL OR Sem.Status = @SemesterStatus)
+        --AND (@SemesterStatus IS NULL OR Sem.Status = @SemesterStatus)
     ORDER BY C.StartTime;
 END
