@@ -16,8 +16,8 @@ BEGIN
         S.SubjectID,
         S.SubjectName,
         SM.SemesterName,
-        S.TuitionFee,
-        S.DELETE_FLG
+        S.TuitionFee
+        --S.DELETE_FLG
     FROM SUBJECT S
     INNER JOIN SEMESTER SM ON S.SemesterID = SM.SemesterID
     WHERE (S.DELETE_FLG IS NULL OR S.DELETE_FLG = 0)
