@@ -21,6 +21,7 @@ BEGIN
         C.Room,
         C.MaxSeats,
         C.DaysOfWeek,
+		C.StudentCount,
         S.SubjectName,
         Sem.SemesterName,
         --Sem.Status AS SemesterStatus,
