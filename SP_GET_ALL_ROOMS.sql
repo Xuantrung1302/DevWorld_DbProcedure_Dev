@@ -6,16 +6,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[SP_GET_ALL_ROOMS]
-    @RoomName NVARCHAR(100) = NULL 
+ALTER PROCEDURE [dbo].[SP_GET_ALL_ROOMS]
+    @Room VARCHAR(10) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
-        SELECT RoomID, RoomName, MaxSeats
+        SELECT RoomID, Room, MaxSeats
         FROM ROOM
-        WHERE (@RoomName IS NULL OR RoomName LIKE '%' + @RoomName + '%')
-        ORDER BY RoomName;
+        WHERE (@Room IS NULL OR Room LIKE '%' + @Room + '%')
+        ORDER BY Room;
     END TRY
     BEGIN CATCH
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();

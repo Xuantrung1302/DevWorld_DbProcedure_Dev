@@ -6,9 +6,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[SP_INSERT_ROOM]
-    @RoomID NVARCHAR(20),
-    @RoomName NVARCHAR(100),
+ALTER PROCEDURE [dbo].[SP_INSERT_ROOM]
+    @Room VARCHAR(10),
     @MaxSeats INT
 AS
 BEGIN
@@ -16,15 +15,10 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        IF EXISTS (SELECT 1 FROM ROOM WHERE RoomID = @RoomID)
-        BEGIN
-            RAISERROR('RoomID da ton tai.', 16, 1);
-            ROLLBACK;
-            RETURN 0;
-        END
+        DECLARE @NewRoomID UNIQUEIDENTIFIER = NEWID();
 
-        INSERT INTO ROOM (RoomID, RoomName, MaxSeats)
-        VALUES (@RoomID, @RoomName, @MaxSeats);
+        INSERT INTO ROOM (RoomID, Room, MaxSeats)
+        VALUES (@NewRoomID, @Room, @MaxSeats);
 
         COMMIT TRANSACTION;
         RETURN 1;
