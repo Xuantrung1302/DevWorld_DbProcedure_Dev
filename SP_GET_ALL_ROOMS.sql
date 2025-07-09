@@ -1,0 +1,25 @@
+USE [DEV_ACADEMY]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[SP_GET_ALL_ROOMS]
+    @RoomName NVARCHAR(100) = NULL 
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        SELECT RoomID, RoomName, MaxSeats
+        FROM ROOM
+        WHERE (@RoomName IS NULL OR RoomName LIKE '%' + @RoomName + '%')
+        ORDER BY RoomName;
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+    END CATCH
+END
+GO
