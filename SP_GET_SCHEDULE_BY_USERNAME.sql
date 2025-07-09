@@ -44,7 +44,7 @@ BEGIN
         INNER JOIN TEACHER T ON C.TeacherID = T.TeacherID
         WHERE T.Username = @Username;
     END
-    ELSE IF @Role = 'Employee'
+    ELSE IF @Role IN ('Employee', 'Admin')
     BEGIN
         IF @Code IS NULL OR @SemesterID IS NULL
         BEGIN
