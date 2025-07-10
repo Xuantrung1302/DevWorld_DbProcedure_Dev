@@ -5,21 +5,19 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[SP_UPDATE_ATTENDANCE_RECORD]
+CREATE OR ALTER PROCEDURE [dbo].[SP_UPDATE_ATTENDANCE_RECORD]
     @AttendanceID UNIQUEIDENTIFIER,
     @Status NVARCHAR(20),
-    @RecordedTime DATETIME,
     @RecordedBy VARCHAR(10),
     @Notes NVARCHAR(200) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
 
         UPDATE ATTENDANCE_RECORD
         SET Status = @Status,
-            RecordedTime = @RecordedTime,
+            RecordedTime = GETDATE(),
             RecordedBy = @RecordedBy,
             Notes = @Notes
         WHERE AttendanceID = @AttendanceID AND DELETE_FLG = 0;

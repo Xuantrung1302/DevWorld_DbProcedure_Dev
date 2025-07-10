@@ -19,13 +19,17 @@ BEGIN
 
     -- Insert statements for procedure here
 	SELECT DISTINCT
+		@TeacherID AS TeacherID,
+		C.ClassID,
 		C.ClassName,
+		S.SubjectID,
 		S.SubjectName,
 		C.DaysOfWeek,
 		C.Room,
 		C.StudentCount,
 		SE.SemesterName,
-		CONCAT(FORMAT(C.StartTime, 'HH:mm'), ' - ', FORMAT(C.EndTime, 'HH:mm')) AS StudyTime
+		C.StartTime,
+		C.EndTime
 	FROM CLASS C
 	JOIN SUBJECT S ON C.SubjectID = C.SubjectID
 	JOIN SEMESTER SE ON S.SemesterID = SE.SemesterID

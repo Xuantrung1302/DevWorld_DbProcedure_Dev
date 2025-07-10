@@ -5,7 +5,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[SP_SELECT_SUBJECT]
+CREATE OR ALTER PROCEDURE [dbo].[SP_SELECT_SUBJECT]
     @SubjectID VARCHAR(10) = NULL,
     @SemesterID VARCHAR(10) = NULL
 AS
@@ -16,7 +16,8 @@ BEGIN
         S.SubjectID,
         S.SubjectName,
         SM.SemesterName,
-        S.TuitionFee
+        S.TuitionFee,
+        S.SemesterID
         --S.DELETE_FLG
     FROM SUBJECT S
     INNER JOIN SEMESTER SM ON S.SemesterID = SM.SemesterID
