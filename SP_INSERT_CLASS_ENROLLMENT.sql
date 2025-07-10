@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[SP_INSERT_CLASS_ENROLLMENT]
+ALTER PROCEDURE [dbo].[SP_INSERT_CLASS_ENROLLMENT]
     @StudentID VARCHAR(10),
     @ClassID UNIQUEIDENTIFIER,
     @EnrollmentDate DATETIME = NULL,
@@ -16,10 +16,12 @@ CREATE PROCEDURE [dbo].[SP_INSERT_CLASS_ENROLLMENT]
     @CompletionDate DATETIME = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
 
     BEGIN TRY
         BEGIN TRANSACTION;
 
+        -- Insert vào CLASS_ENROLLMENT
         INSERT INTO CLASS_ENROLLMENT
         (
             EnrollmentID,
@@ -42,6 +44,15 @@ BEGIN
             @CompletionStatus,
             @CompletionDate
         );
+
+        UPDATE CLASS
+        SET StudentCount = 
+        (
+            SELECT COUNT(*)
+            FROM CLASS_ENROLLMENT CE
+            WHERE CE.ClassID = @ClassID
+        )
+        WHERE ClassID = @ClassID;
 
         COMMIT TRANSACTION;
         RETURN 1; -- Success
