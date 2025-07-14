@@ -5,14 +5,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[SP_SELECT_COURSE_DETAIL]
+alter PROCEDURE [dbo].[SP_SELECT_COURSE_DETAIL]
     @CourseID UNIQUEIDENTIFIER = NULL,
     @CourseName NVARCHAR(100) = NULL,
     @SemesterName NVARCHAR(100) = NULL,
     @SubjectName NVARCHAR(100) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
+    --SET NOCOUNT ON;
 
     SELECT 
         c.course_id AS CourseID,
@@ -34,4 +34,4 @@ BEGIN
         AND (@SubjectName IS NULL OR sub.SubjectName LIKE '%' + @SubjectName + '%')
     ORDER BY c.course_name, s.SemesterName, sub.SubjectName
 END
-EXEC SP_SELECT_COURSE_DETAIL @CourseName = N'Fullstack';
+--EXEC SP_SELECT_COURSE_DETAIL @CourseName = N'Fullstack';
