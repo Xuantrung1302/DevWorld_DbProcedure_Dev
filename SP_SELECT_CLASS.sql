@@ -14,6 +14,7 @@ BEGIN
         C.Room,
         C.MaxSeats,
         C.DaysOfWeek,
+		C.StudentCount,
         S.SubjectName,
         Sem.SemesterName,
         T.FullName AS TeacherName
