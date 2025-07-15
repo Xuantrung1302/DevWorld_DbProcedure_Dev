@@ -14,16 +14,19 @@ AS
 BEGIN
     --SET NOCOUNT ON;
 
-    SELECT 
+    SELECT distinct
         c.course_id AS CourseID,
         c.course_name AS CourseName,
         c.course_code AS CourseCode,
         s.SemesterName,
         sub.SubjectName,
+		--cl.ClassID,
+		cl.ClassName,
         sub.TuitionFee AS Fee
     FROM Course c
     INNER JOIN SEMESTER s ON c.course_id = s.course_id
     INNER JOIN SUBJECT sub ON s.SemesterID = sub.SemesterID
+	INNER JOIN CLASS cl ON cl.SubjectID = sub.SubjectID
     WHERE
         ISNULL(c.delete_flg, 0) = 0
         AND ISNULL(s.DELETE_FLG, 0) = 0
@@ -35,3 +38,7 @@ BEGIN
     ORDER BY c.course_name, s.SemesterName, sub.SubjectName
 END
 --EXEC SP_SELECT_COURSE_DETAIL @CourseName = N'Fullstack';
+
+
+--select * from CLASS
+--where ClassID = 'D7FA6CED-E503-4B96-9A0D-54F608128F61'
