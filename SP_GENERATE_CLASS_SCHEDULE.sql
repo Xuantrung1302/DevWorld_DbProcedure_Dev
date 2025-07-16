@@ -1,89 +1,90 @@
 USE [DEV_ACADEMY]
 GO
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER PROCEDURE [dbo].[SP_GENERATE_CLASS_SCHEDULE]
+ALTER PROCEDURE SP_GENERATE_CLASS_SCHEDULE
     @ClassID UNIQUEIDENTIFIER
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @ClassName VARCHAR(50),
-            @DaysOfWeek VARCHAR(20),
-            @StartTime DATETIME,
-            @EndTime DATETIME,
+    DECLARE @DaysOfWeek VARCHAR(20),
+            @StartTime TIME,
+            @EndTime TIME,
             @SemesterID VARCHAR(10),
-            @SemesterStartDate DATETIME,
-            @SemesterEndDate DATETIME;
+            @SemesterStart DATE,
+            @SemesterEnd DATE,
+            @SubjectID VARCHAR(10),
+            @Lessons INT,
+            @CurrentDate DATE,
+            @NextSubjectStartDate DATE;
 
     SELECT 
-        @ClassName = C.ClassName,
-        @DaysOfWeek = C.DaysOfWeek,
-        @StartTime = C.StartTime,
-        @EndTime = C.EndTime,
-        @SemesterID = S.SemesterID
+        @DaysOfWeek = DaysOfWeek,
+        @StartTime = CAST(StartTime AS TIME),
+        @EndTime = CAST(EndTime AS TIME)
+    FROM CLASS 
+    WHERE ClassID = @ClassID;
+
+    DECLARE semester_cursor CURSOR FOR
+    SELECT DISTINCT S.SemesterID, S.StartDate, S.EndDate
     FROM CLASS C
-    INNER JOIN SUBJECT SJ ON C.SubjectID = SJ.SubjectID
-    INNER JOIN SEMESTER S ON SJ.SemesterID = S.SemesterID
-    WHERE C.ClassID = @ClassID;
+    JOIN Course CO ON C.course_id = CO.course_id
+    JOIN SEMESTER S ON S.course_id = CO.course_id
+    WHERE C.ClassID = @ClassID
+    ORDER BY S.StartDate;
 
-    SELECT 
-        @SemesterStartDate = StartDate,
-        @SemesterEndDate = EndDate
-    FROM SEMESTER
-    WHERE SemesterID = @SemesterID;
+    OPEN semester_cursor;
+    FETCH NEXT FROM semester_cursor INTO @SemesterID, @SemesterStart, @SemesterEnd;
 
-    DECLARE @CurrentDate DATE = @SemesterStartDate;
-    DECLARE @WeekDayNum VARCHAR(2);
+    SET @NextSubjectStartDate = @SemesterStart;
 
-    DECLARE @DayCount TABLE
-    (
-        DayNum VARCHAR(2) PRIMARY KEY,
-        Count INT
-    );
-
-    DECLARE @pos INT = 0, @nextPos INT, @len INT;
-    DECLARE @day VARCHAR(2);
-    SET @DaysOfWeek = @DaysOfWeek + ',';
-    SET @len = LEN(@DaysOfWeek);
-
-    WHILE @pos < @len
+    WHILE @@FETCH_STATUS = 0
     BEGIN
-        SET @nextPos = CHARINDEX(',', @DaysOfWeek, @pos + 1);
-        SET @day = SUBSTRING(@DaysOfWeek, @pos + 1, @nextPos - @pos - 1);
+        DECLARE subject_cursor CURSOR FOR
+        SELECT SubjectID
+        FROM SUBJECT
+        WHERE SemesterID = @SemesterID AND DELETE_FLG = 0
+        ORDER BY SubjectID;
 
-        INSERT INTO @DayCount(DayNum, Count) VALUES (@day, 0);
+        OPEN subject_cursor;
+        FETCH NEXT FROM subject_cursor INTO @SubjectID;
 
-        SET @pos = @nextPos;
-    END
-
-    WHILE @CurrentDate <= @SemesterEndDate
-    BEGIN
-        SET @WeekDayNum = CAST(DATEPART(WEEKDAY, @CurrentDate) AS VARCHAR);
-
-        IF EXISTS (SELECT 1 FROM @DayCount WHERE DayNum = @WeekDayNum AND Count < 8)
+        WHILE @@FETCH_STATUS = 0
         BEGIN
-            INSERT INTO CLASS_SCHEDULE (Class_ScheID, ClassID, ClassName, DayOfWeek, StartTime, EndTime)
-            VALUES 
-            (
-                NEWID(), 
-                @ClassID, 
-                @ClassName, 
-                @WeekDayNum, 
-                DATEADD(HOUR, DATEPART(HOUR, @StartTime), CAST(@CurrentDate AS DATETIME)),
-                DATEADD(HOUR, DATEPART(HOUR, @EndTime), CAST(@CurrentDate AS DATETIME))
-            );
+            SET @Lessons = 0;
+            SET @CurrentDate = @NextSubjectStartDate;
 
-            UPDATE @DayCount
-            SET Count = Count + 1
-            WHERE DayNum = @WeekDayNum;
+            WHILE @Lessons < 8 AND @CurrentDate <= @SemesterEnd
+            BEGIN
+                IF CHARINDEX(CAST(DATEPART(WEEKDAY, @CurrentDate) AS VARCHAR), @DaysOfWeek) > 0
+                BEGIN
+                    INSERT INTO CLASS_SCHEDULE (
+                        Class_ScheID, ClassID, ClassName, DayOfWeek, StartTime, EndTime, SubjectID
+                    )
+                    SELECT 
+                        NEWID(), @ClassID, C.ClassName, 
+                        CAST(DATEPART(WEEKDAY, @CurrentDate) AS VARCHAR),
+                        CAST(DATEADD(HOUR, DATEPART(HOUR, @StartTime), CAST(@CurrentDate AS DATETIME)) AS DATETIME),
+                        CAST(DATEADD(HOUR, DATEPART(HOUR, @EndTime), CAST(@CurrentDate AS DATETIME)) AS DATETIME),
+                        @SubjectID
+                    FROM CLASS C
+                    WHERE C.ClassID = @ClassID;
+
+                    SET @Lessons = @Lessons + 1;
+                END
+                SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);
+            END
+
+            SET @NextSubjectStartDate = DATEADD(DAY, 1, @CurrentDate);
+            FETCH NEXT FROM subject_cursor INTO @SubjectID;
         END
 
-        SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);
+        CLOSE subject_cursor;
+        DEALLOCATE subject_cursor;
+
+        FETCH NEXT FROM semester_cursor INTO @SemesterID, @SemesterStart, @SemesterEnd;
     END
+
+    CLOSE semester_cursor;
+    DEALLOCATE semester_cursor;
 END
 GO
