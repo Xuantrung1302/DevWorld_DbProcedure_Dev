@@ -1,0 +1,20 @@
+USE [DEV_ACADEMY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[SP_SELECT_CLASSES_BY_COURSE]
+    @CourseID UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        cl.ClassID,
+        cl.ClassName
+    FROM CLASS cl
+    WHERE cl.course_id = @CourseID;
+END
+GO
