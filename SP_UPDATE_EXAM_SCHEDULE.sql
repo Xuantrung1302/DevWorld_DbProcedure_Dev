@@ -11,7 +11,8 @@ ALTER PROCEDURE [dbo].[SP_UPDATE_EXAM_SCHEDULE]
     @ExamType NVARCHAR(20),
     @ExamDateStart DATETIME,
     @ExamDateEnd DATETIME,
-    @Room NVARCHAR(100)
+    @Room NVARCHAR(100),
+    @SubjectID VARCHAR(10) = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -24,12 +25,13 @@ BEGIN
             ExamType = @ExamType,
             ExamDateStart = @ExamDateStart,
             ExamDateEnd = @ExamDateEnd,
-            Room = @Room
+            Room = @Room,
+            SubjectID = COALESCE(@SubjectID, SubjectID) 
         WHERE ExamID = @ExamID;
 
         IF @@ROWCOUNT = 0
         BEGIN
-            ROLLBACK;
+            ROLLBACK TRANSACTION;
             RAISERROR('Exam schedule not found.', 16, 1);
             RETURN 0;
         END
