@@ -4,9 +4,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 ALTER PROCEDURE [dbo].[SP_SELECT_EXAM_SCHEDULE]
-    @SemesterID VARCHAR(10) = NULL
+    @ClassID UNIQUEIDENTIFIER = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -14,6 +13,7 @@ BEGIN
     SELECT 
         E.ExamID,
         C.ClassName,
+        S.SubjectName,
         E.ExamName,
         E.ExamType,
         E.ExamDateStart,
@@ -24,9 +24,10 @@ BEGIN
         E.CreatedDate
     FROM EXAM_SCHEDULE E
     INNER JOIN CLASS C ON E.ClassID = C.ClassID
-    INNER JOIN SUBJECT Subj ON C.SubjectID = Subj.SubjectID
-    INNER JOIN SEMESTER S ON Subj.SemesterID = S.SemesterID
+    INNER JOIN COURSE CR ON C.course_id = CR.course_id
+    INNER JOIN SEMESTER Se ON CR.course_id = Se.course_id
+    INNER JOIN SUBJECT S ON S.SemesterID = Se.SemesterID
     INNER JOIN EMPLOYEE Emp ON E.CreatedBy = Emp.EmployeeID
-    WHERE (@SemesterID IS NULL OR S.SemesterID = @SemesterID)
+    WHERE (@ClassID IS NULL OR C.ClassID = @ClassID)
     ORDER BY E.ExamDateStart;
 END
