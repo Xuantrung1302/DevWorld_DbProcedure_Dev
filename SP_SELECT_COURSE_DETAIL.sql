@@ -16,10 +16,12 @@ BEGIN
         c.course_id, 
         sub.SubjectName, 
         s.SemesterName,
-        sub.TuitionFee 
+        sub.TuitionFee,
+		CL.ClassName
     FROM Course c
     INNER JOIN SEMESTER s ON c.course_id = s.course_id 
     INNER JOIN SUBJECT sub ON s.SemesterID = sub.SemesterID 
+	INNER JOIN CLASS CL ON C.course_id = c.course_id
     WHERE
         ISNULL(c.delete_flg, 0) = 0
         AND ISNULL(s.DELETE_FLG, 0) = 0
@@ -28,3 +30,4 @@ BEGIN
     ORDER BY c.course_name, s.SemesterName, sub.SubjectName
 END
 GO
+--exec SP_SELECT_COURSE_DETAIL
