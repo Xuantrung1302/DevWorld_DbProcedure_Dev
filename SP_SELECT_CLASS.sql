@@ -12,7 +12,7 @@ BEGIN
         C.MaxSeats,
         C.DaysOfWeek,
         C.StudentCount,
-        T.FullName AS TeacherName,
+        T.FullName AS TeacherName,	
         Co.course_name
     FROM CLASS C
     INNER JOIN Course Co ON C.course_id = Co.course_id
