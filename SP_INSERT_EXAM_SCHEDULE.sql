@@ -7,7 +7,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER PROCEDURE [dbo].[SP_INSERT_EXAM_SCHEDULE]
-    @ExamID UNIQUEIDENTIFIER,
     @ClassID UNIQUEIDENTIFIER,
     @SubjectID VARCHAR(10), 
     @ExamName NVARCHAR(100),
@@ -30,7 +29,7 @@ BEGIN
         )
         VALUES 
         (
-            @ExamID, @ClassID, @SubjectID, @ExamName, @ExamType,
+            NEWID(), @ClassID, @SubjectID, @ExamName, @ExamType,
             @ExamDateStart, @ExamDateEnd, @Room,
             @CreatedBy, COALESCE(@CreatedDate, GETDATE())
         );
