@@ -2,8 +2,8 @@ USE [DEV_ACADEMY]
 GO
 ALTER PROCEDURE [SP_GET_CLASS_SCHEDULE]
     @CourseID UNIQUEIDENTIFIER,
-    @ClassID UNIQUEIDENTIFIER,
-    @SemesterID VARCHAR(10)
+    @ClassID UNIQUEIDENTIFIER
+    --@SemesterID VARCHAR(10)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -32,7 +32,7 @@ BEGIN
     WHERE
         cr.course_id = @CourseID
         AND cs.ClassID = @ClassID
-        AND sm.SemesterID = @SemesterID
+        --AND sm.SemesterID = @SemesterID
     ORDER BY cs.StartTime;
 END
 GO
