@@ -7,7 +7,7 @@ GO
 
 ALTER PROCEDURE [dbo].[SP_SELECT_EXAM_SCHEDULE]
     @CourseID UNIQUEIDENTIFIER = NULL,
-    @SubjectName NVARCHAR(100) = NULL
+    @SubjectID VARCHAR(100) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -28,10 +28,11 @@ BEGIN
     INNER JOIN CLASS C ON E.ClassID = C.ClassID
     INNER JOIN COURSE CR ON C.course_id = CR.course_id
     INNER JOIN SEMESTER Se ON CR.course_id = Se.course_id
-    INNER JOIN SUBJECT S ON S.SemesterID = Se.SemesterID
+    INNER JOIN SUBJECT S ON S.SemesterID = Se.SemesterID 
     INNER JOIN EMPLOYEE Emp ON E.CreatedBy = Emp.EmployeeID
     WHERE
         (@CourseID IS NULL OR CR.course_id = @CourseID)
-        AND (@SubjectName IS NULL OR S.SubjectName LIKE N'%' + @SubjectName + N'%')
+        AND (@SubjectID IS NULL OR S.SubjectID = @SubjectID)
     ORDER BY E.ExamDateStart;
 END
+
