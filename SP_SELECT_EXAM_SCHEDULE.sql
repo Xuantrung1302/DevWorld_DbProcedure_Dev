@@ -15,6 +15,7 @@ BEGIN
     SELECT 
         E.ExamID,
         C.ClassName,
+        E.SubjectID,
         S.SubjectName,
         E.ExamName,
         E.ExamType,
@@ -27,12 +28,11 @@ BEGIN
     FROM EXAM_SCHEDULE E
     INNER JOIN CLASS C ON E.ClassID = C.ClassID
     INNER JOIN COURSE CR ON C.course_id = CR.course_id
-    INNER JOIN SEMESTER Se ON CR.course_id = Se.course_id
-    INNER JOIN SUBJECT S ON S.SemesterID = Se.SemesterID 
+    LEFT JOIN SUBJECT S ON E.SubjectID = S.SubjectID
     INNER JOIN EMPLOYEE Emp ON E.CreatedBy = Emp.EmployeeID
     WHERE
         (@CourseID IS NULL OR CR.course_id = @CourseID)
-        AND (@SubjectID IS NULL OR S.SubjectID = @SubjectID)
+        AND (@SubjectID IS NULL OR E.SubjectID = @SubjectID)
     ORDER BY E.ExamDateStart;
 END
 
