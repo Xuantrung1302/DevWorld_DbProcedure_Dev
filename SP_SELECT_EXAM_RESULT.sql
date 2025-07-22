@@ -11,7 +11,7 @@ ALTER PROCEDURE [dbo].[SP_SELECT_EXAM_RESULT]
     @CourseID UNIQUEIDENTIFIER = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
+    --SET NOCOUNT ON;
 
     SELECT 
         ER.ResultID,
@@ -20,6 +20,7 @@ BEGIN
         S.SubjectName,
         Se.SemesterName,
         Co.course_name AS CourseName,
+		St.StudentID,
         St.FullName AS StudentName,
         ER.Score,
         ER.Status,
