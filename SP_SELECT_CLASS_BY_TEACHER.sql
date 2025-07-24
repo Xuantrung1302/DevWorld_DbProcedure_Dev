@@ -22,17 +22,14 @@ BEGIN
 		@TeacherID AS TeacherID,
 		C.ClassID,
 		C.ClassName,
-		S.SubjectID,
-		S.SubjectName,
 		C.DaysOfWeek,
 		C.Room,
 		C.StudentCount,
-		SE.SemesterName,
 		C.StartTime,
-		C.EndTime
+		C.EndTime,
+		CO.course_name
 	FROM CLASS C
-	JOIN SUBJECT S ON C.SubjectID = C.SubjectID
-	JOIN SEMESTER SE ON S.SemesterID = SE.SemesterID
+	JOIN Course CO ON CO.course_id = C.course_id
 	WHERE TeacherID = @TeacherID
 END
 GO
