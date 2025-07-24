@@ -6,19 +6,18 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER PROCEDURE [dbo].[SP_INSERT_NOTICE]
-    @NewsID VARCHAR(10),
     @Title NVARCHAR(200),
     @Content NVARCHAR(MAX),
     @PostDate DATETIME,
     @PostedBy VARCHAR(20)
 AS
 BEGIN
-    SET NOCOUNT ON;
+    --SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
 
         INSERT INTO NEWSBOARD (NewsID, Title, Content, PostDate, PostedBy)
-        VALUES (@NewsID, @Title, @Content, @PostDate, @PostedBy);
+        VALUES (NewID(), @Title, @Content, @PostDate, @PostedBy);
 
         COMMIT TRANSACTION;
         RETURN 1; -- Success
@@ -30,3 +29,4 @@ BEGIN
         RETURN 0; -- Failure
     END CATCH;
 END
+

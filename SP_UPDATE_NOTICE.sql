@@ -6,18 +6,22 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER PROCEDURE [dbo].[SP_UPDATE_NOTICE]
-    @NewsID VARCHAR(10),
+    @NewsID UNIQUEIDENTIFIER,
     @Title NVARCHAR(200),
-    @Content NVARCHAR(MAX)
+    @Content NVARCHAR(MAX),
+	@PostDate DATETIME,
+    @PostedBy VARCHAR(20)
 AS
 BEGIN
-    SET NOCOUNT ON;
+    --SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
 
         UPDATE NEWSBOARD
         SET Title = @Title,
-            Content = @Content
+            Content = @Content,
+			PostedBy = @PostedBy,
+			PostDate = @PostDate
         WHERE NewsID = @NewsID;
 
         IF @@ROWCOUNT = 0
