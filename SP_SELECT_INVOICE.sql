@@ -8,24 +8,29 @@ GO
 ALTER PROCEDURE [dbo].[SP_SELECT_INVOICE]
     @StudentID VARCHAR(10) = NULL,
     @SemesterID VARCHAR(10) = NULL,
-	@Status NVARCHAR(20) = NULL
+    @Status NVARCHAR(20) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-		InvoiceID,
-		StudentID,
-		SemesterID,
-		InvoiceDate,
-		DueDate,
-		Amount,
-    Status
-    FROM INVOICE
+        I.InvoiceID,
+        I.StudentID,
+        I.SemesterID,
+        C.course_id,             
+        C.course_name,           
+        I.InvoiceDate,
+        I.DueDate,
+        I.Amount,
+        I.Status
+    FROM INVOICE I
+    LEFT JOIN SEMESTER S ON I.SemesterID = S.SemesterID
+    LEFT JOIN COURSE C ON S.course_id = C.course_id
     WHERE
-        (@StudentID IS NULL OR StudentID = @StudentID)
-        AND (@SemesterID IS NULL OR SemesterID = @SemesterID)
-        AND (@Status IS NULL OR Status = @Status)
-        AND (DELETE_FLG IS NULL OR DELETE_FLG = 0)
+        (@StudentID IS NULL OR I.StudentID = @StudentID)
+        AND (@SemesterID IS NULL OR I.SemesterID = @SemesterID)
+        AND (@Status IS NULL OR I.Status = @Status)
+        AND (I.DELETE_FLG IS NULL OR I.DELETE_FLG = 0)
 END
 GO
+
