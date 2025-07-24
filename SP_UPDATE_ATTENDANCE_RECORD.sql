@@ -6,30 +6,39 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER PROCEDURE [dbo].[SP_UPDATE_ATTENDANCE_RECORD]
-    @AttendanceID UNIQUEIDENTIFIER,
-    @Status NVARCHAR(20),
-    @RecordedTime DATETIME,
-    @RecordedBy VARCHAR(10),
-    @Notes NVARCHAR(200) = NULL
+    @json NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
+
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        UPDATE ATTENDANCE_RECORD
-        SET Status = @Status,
-            RecordedTime = @RecordedTime,
-            RecordedBy = @RecordedBy,
-            Notes = @Notes
-        WHERE AttendanceID = @AttendanceID AND DELETE_FLG = 0;
-
-        IF @@ROWCOUNT = 0
-        BEGIN
-            ROLLBACK;
-            RAISERROR('Attendance record not found or already deleted.', 16, 1);
-            RETURN 0;
-        END
+        WITH DataToUpdate AS (
+            SELECT
+                CAST(data.AttendanceID AS UNIQUEIDENTIFIER) AS AttendanceID,
+                CAST(data.Status AS INT) AS Status,
+                CAST(data.RecordedTime AS DATETIME) AS RecordedTime,
+                data.RecordedBy,
+                data.Notes
+            FROM OPENJSON(@json)
+            WITH (
+                AttendanceID UNIQUEIDENTIFIER,
+                Status INT,
+                RecordedTime DATETIME,
+                RecordedBy VARCHAR(10),
+                Notes NVARCHAR(200)
+            ) AS data
+        )
+        UPDATE AR
+        SET
+            AR.Status = DTU.Status,
+            AR.RecordedTime = DTU.RecordedTime,
+            AR.RecordedBy = DTU.RecordedBy,
+            AR.Notes = DTU.Notes
+        FROM ATTENDANCE_RECORD AR
+        JOIN DataToUpdate DTU ON AR.AttendanceID = DTU.AttendanceID
+        WHERE AR.DELETE_FLG = 0;
 
         COMMIT TRANSACTION;
         RETURN 1;
