@@ -1,0 +1,25 @@
+USE [DEV_ACADEMY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [SP_GET_SUBJECT_SCORES_BY_STUDENT_AND_COURSE]
+    @StudentID VARCHAR(10),
+    @CourseID  UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        SJ.SubjectName,
+        ER.Score,
+        ER.Status
+    FROM COURSE C
+    JOIN SEMESTER S       ON C.course_id = S.course_id AND ISNULL(S.DELETE_FLG, 0) = 0
+    JOIN SUBJECT SJ       ON S.SemesterID = SJ.SemesterID AND ISNULL(SJ.DELETE_FLG, 0) = 0
+    JOIN EXAM_SCHEDULE ES ON ES.SubjectID = SJ.SubjectID
+    JOIN EXAM_RESULT ER   ON ER.ExamID = ES.ExamID AND ER.StudentID = @StudentID
+    WHERE C.course_id = @CourseID
+END
