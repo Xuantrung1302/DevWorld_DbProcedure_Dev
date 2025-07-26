@@ -6,23 +6,41 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 ALTER PROCEDURE [dbo].[SP_INSERT_ATTENDANCE_RECORD]
-    @AttendanceID UNIQUEIDENTIFIER,
-    @Class_ScheID UNIQUEIDENTIFIER,
-    @StudentID VARCHAR(10),
-    @Status NVARCHAR(20),
-    @RecordedTime DATETIME,
-    @RecordedBy VARCHAR(10),
-    @Notes NVARCHAR(200) = NULL
+    @json NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        INSERT INTO ATTENDANCE_RECORD
-            (AttendanceID, Class_ScheID, StudentID, Status, RecordedTime, RecordedBy, Notes, DELETE_FLG)
-        VALUES
-            (@AttendanceID, @Class_ScheID, @StudentID, @Status, @RecordedTime, @RecordedBy, @Notes, 0);
+        INSERT INTO ATTENDANCE_RECORD (
+            AttendanceID,
+            Class_ScheID,
+            StudentID,
+            Status,
+            RecordedTime,
+            RecordedBy,
+            Notes,
+            DELETE_FLG
+        )
+        SELECT
+            NEWID(),
+            CAST(data.Class_ScheID AS UNIQUEIDENTIFIER),
+            data.StudentID,
+            CAST(data.Status AS INT),
+            CAST(data.RecordedTime AS DATETIME),
+            data.RecordedBy,
+            data.Notes,
+            0
+        FROM OPENJSON(@json)
+        WITH (
+            Class_ScheID UNIQUEIDENTIFIER,
+            StudentID VARCHAR(10),
+            Status INT,
+            RecordedTime DATETIME,
+            RecordedBy VARCHAR(10),
+            Notes NVARCHAR(200)
+        ) AS data;
 
         COMMIT TRANSACTION;
         RETURN 1;
@@ -34,4 +52,5 @@ BEGIN
         RETURN 0;
     END CATCH;
 END
+
 

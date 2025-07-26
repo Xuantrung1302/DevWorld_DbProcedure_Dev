@@ -5,28 +5,53 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[SP_INSERT_NOTICE]
-    @Title NVARCHAR(200),
-    @Content NVARCHAR(MAX),
-    @PostDate DATETIME,
-    @PostedBy VARCHAR(20)
+ALTER PROCEDURE [dbo].[SP_INSERT_INVOICE]
+    @json NVARCHAR(MAX)
 AS
 BEGIN
-    --SET NOCOUNT ON;
+    SET NOCOUNT ON;
+
     BEGIN TRY
         BEGIN TRANSACTION;
-
-        INSERT INTO NEWSBOARD (NewsID, Title, Content, PostDate, PostedBy)
-        VALUES (NewID(), @Title, @Content, @PostDate, @PostedBy);
+        INSERT INTO INVOICE (
+            InvoiceID,
+            StudentID,
+            course_id,
+            InvoiceDate,
+            DueDate,
+            Amount,
+            DELETE_FLG,
+            Status
+        )
+        SELECT
+            NEWID(), 
+            JSONData.StudentID,
+            JSONData.course_id,
+            JSONData.InvoiceDate,
+            JSONData.DueDate,
+            JSONData.Amount,
+            ISNULL(JSONData.DELETE_FLG, 0),
+            JSONData.Status
+        FROM OPENJSON(@json)
+        WITH (
+            StudentID NVARCHAR(10),
+            course_id UNIQUEIDENTIFIER,
+            InvoiceDate DATETIME,
+            DueDate DATETIME,
+            Amount DECIMAL(12, 2),
+            DELETE_FLG BIT,
+            Status NVARCHAR(20)
+        ) AS JSONData;
 
         COMMIT TRANSACTION;
-        RETURN 1; -- Success
+        RETURN 1;
     END TRY
     BEGIN CATCH
         ROLLBACK TRANSACTION;
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        RAISERROR(@ErrorMessage, 16, 1);
-        RETURN 0; -- Failure
-    END CATCH;
+        DECLARE @err NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@err, 16, 1);
+        RETURN 0;
+    END CATCH
 END
+
 
