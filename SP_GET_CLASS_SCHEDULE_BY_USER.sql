@@ -17,6 +17,7 @@ BEGIN
         cs.DayOfWeek,
         cs.StartTime,
         cs.EndTime,
+	    c.Room,
         sm.SemesterID,
         sm.SemesterName,
         cr.course_id AS CourseID,
