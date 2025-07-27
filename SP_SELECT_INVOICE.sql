@@ -14,6 +14,7 @@ BEGIN
     SELECT 
         I.InvoiceID,
         I.StudentID,
+        S.FullName,       
         CO.course_id,
         CO.course_name,
         I.InvoiceDate,
@@ -22,6 +23,7 @@ BEGIN
         I.Status
     FROM INVOICE I
     LEFT JOIN COURSE CO ON I.course_id = CO.course_id
+    LEFT JOIN STUDENT S ON I.StudentID = S.StudentID   
     WHERE
         (@StudentID IS NULL OR I.StudentID = @StudentID)
         AND (I.DELETE_FLG IS NULL OR I.DELETE_FLG = 0)
