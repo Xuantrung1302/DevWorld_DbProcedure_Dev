@@ -12,8 +12,7 @@ BEGIN
         S.FullName,
         S.Gender
     FROM CLASS C
-    JOIN CLASS_SCHEDULE CS ON C.ClassID = CS.ClassID
-    JOIN ATTENDANCE_RECORD AR ON CS.Class_ScheID = AR.Class_ScheID
-    JOIN STUDENT S ON AR.StudentID = S.StudentID
+    JOIN CLASS_ENROLLMENT CE ON C.ClassID = CE.ClassID
+    JOIN STUDENT S ON CE.StudentID = S.StudentID
     WHERE C.ClassID = @ClassID
 END
