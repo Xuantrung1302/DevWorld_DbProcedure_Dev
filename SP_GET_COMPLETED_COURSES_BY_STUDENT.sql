@@ -57,6 +57,5 @@ BEGIN
     JOIN COURSE C ON C.course_id = PCC.course_id
     WHERE PCC.PassedCount = SPC.TotalSubjects
 END
-select * from EXAM_RESULT
-exec [SP_GET_COMPLETED_COURSES_BY_STUDENT] @StudentID = 'HV00000001'
+
 

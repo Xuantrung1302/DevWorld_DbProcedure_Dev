@@ -1,0 +1,27 @@
+﻿USE [DEV_ACADEMY]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [SP_INSERT_TEACHER_TO_CLASS]
+    @ClassID UNIQUEIDENTIFIER,
+    @TeacherID VARCHAR(10)
+AS
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM dbo.CLASS WHERE ClassID = @ClassID
+    )
+    BEGIN
+        UPDATE CLASS
+        SET TeacherID = @TeacherID
+        WHERE ClassID = @ClassID
+    END
+    ELSE
+    BEGIN
+        RAISERROR(N'Lớp với mã %s không tồn tại.', 16, 1)
+    END
+END
