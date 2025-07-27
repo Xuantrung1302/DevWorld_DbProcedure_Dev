@@ -1,0 +1,19 @@
+USE [DEV_ACADEMY]
+GO
+
+ALTER PROCEDURE [SP_GET_STUDENTS_BY_ONLY_CLASS]
+    @ClassID UNIQUEIDENTIFIER 
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT DISTINCT
+        S.StudentID,
+        S.FullName,
+        S.Gender
+    FROM CLASS C
+    JOIN CLASS_SCHEDULE CS ON C.ClassID = CS.ClassID
+    JOIN ATTENDANCE_RECORD AR ON CS.Class_ScheID = AR.Class_ScheID
+    JOIN STUDENT S ON AR.StudentID = S.StudentID
+    WHERE C.ClassID = @ClassID
+END
