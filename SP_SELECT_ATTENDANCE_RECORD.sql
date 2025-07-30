@@ -7,8 +7,9 @@ GO
 
 ALTER PROCEDURE [dbo].[SP_SELECT_ATTENDANCE_RECORD]
     @CourseID UNIQUEIDENTIFIER = NULL,
-    @SemesterID VARCHAR(10) = NULL,
-    @ClassID UNIQUEIDENTIFIER = NULL
+	@ClassID UNIQUEIDENTIFIER = NULL,
+    @SubjectID VARCHAR(10) = NULL
+
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -34,8 +35,29 @@ BEGIN
     INNER JOIN TEACHER T ON A.RecordedBy = T.TeacherID
     WHERE A.DELETE_FLG = 0
       AND (@CourseID IS NULL OR Co.course_id = @CourseID)
-      AND (@SemesterID IS NULL OR Se.SemesterID = @SemesterID)
+      AND (@SubjectID IS NULL OR S.SubjectID = @SubjectID)
       AND (@ClassID IS NULL OR C.ClassID = @ClassID)
     ORDER BY A.RecordedTime DESC;
 END
 GO
+
+
+----class id: 0827C74E-6F30-4081-AED5-A884EBC258AD
+
+
+----15:00-17:00
+----select * from Course
+----select * from 
+----MH5778
+
+----go
+----select * from SEMESTER
+----where course_id = 'A87B8BEC-C779-45E7-ADC6-B61F42294939'
+----select * from SUBJECT
+----where SemesterID = 'SEM302'
+
+----select * from ATTENDANCE_RECORD
+
+--select * from SUBJECT
+--where SemesterID = 'SEM302'
+--exec SP_SELECT_ATTENDANCE_RECORD 'A87B8BEC-C779-45E7-ADC6-B61F42294939', '0827C74E-6F30-4081-AED5-A884EBC258AD', 'MH5778'
