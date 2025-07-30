@@ -22,7 +22,7 @@ BEGIN
         sm.SemesterName,
         cr.course_id AS CourseID,
         cr.course_code,
-        cr.course_name,
+        cr.course_name as CourseName,
         t.FullName AS TeacherName
     FROM CLASS_SCHEDULE cs
     INNER JOIN CLASS c ON cs.ClassID = c.ClassID
