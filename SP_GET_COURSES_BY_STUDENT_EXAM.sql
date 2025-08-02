@@ -1,0 +1,26 @@
+USE [DEV_ACADEMY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create or alter PROCEDURE [SP_GET_COURSES_BY_STUDENT_EXAM]
+    @StudentID VARCHAR(10)
+AS
+BEGIN
+    SELECT DISTINCT
+		CO.course_id,
+		CO.course_name
+	FROM CLASS_ENROLLMENT CE
+	JOIN CLASS CL ON CE.ClassID = CL.ClassID
+	JOIN Course CO ON CO.course_id = CL.course_id
+	JOIN SEMESTER SE ON SE.course_id = CO.course_id
+	JOIN SUBJECT SU ON SE.SemesterID = SU.SemesterID
+	WHERE StudentID = @StudentID
+		AND is_active = 1
+END
+--exec SP_GET_COURSES_BY_STUDENT_EXAM 'HV001'
+
+
+
