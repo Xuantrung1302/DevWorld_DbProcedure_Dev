@@ -21,6 +21,7 @@ BEGIN
         Se.SemesterName,
         Co.course_name AS CourseName,
         St.FullName AS StudentName,
+        St.StudentID,
         A.Status,
         A.RecordedTime,
         T.FullName AS TeacherName,
