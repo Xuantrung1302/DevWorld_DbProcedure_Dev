@@ -1,6 +1,6 @@
 ﻿CREATE or alter PROCEDURE [dbo].[SP_INSERT_MESSAGE]
-    @SenderID INT,
-    @ReceiverID INT,
+    @SenderID Varchar(10),
+    @ReceiverID Varchar(10),
     @MessageContent NVARCHAR(1000), -- Giả sử độ dài tối đa của nội dung tin nhắn là 1000 ký tự
     @SentDateTime DATETIME
 AS
@@ -9,12 +9,12 @@ BEGIN
 
     BEGIN TRY
         INSERT INTO [DEV_ACADEMY].[dbo].[Messages]
-            ([SenderID], [ReceiverID], [MessageContent], [SentDateTime])
+            (MessageID,[SenderID], [ReceiverID], [MessageContent], [SentDateTime])
         VALUES
-            (@SenderID, @ReceiverID, @MessageContent, @SentDateTime);
+            (NEWID(),@SenderID, @ReceiverID, @MessageContent, @SentDateTime);
 
         -- Trả về MessageID của tin nhắn vừa chèn (nếu cần)
-        SELECT SCOPE_IDENTITY() AS MessageID;
+        --SELECT SCOPE_IDENTITY() AS MessageID;
     END TRY
     BEGIN CATCH
         -- Xử lý lỗi nếu có
