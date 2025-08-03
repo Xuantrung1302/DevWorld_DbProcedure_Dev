@@ -19,10 +19,10 @@ BEGIN
 
         UPDATE INVOICE
         SET
-            InvoiceDate = @InvoiceDate,
-            DueDate = @DueDate,
-            Amount = @Amount,
-            Status = @Status
+            InvoiceDate = CASE WHEN @InvoiceDate IS NOT NULL THEN @InvoiceDate ELSE InvoiceDate END,
+            DueDate     = CASE WHEN @DueDate IS NOT NULL THEN @DueDate ELSE DueDate END,
+            Amount      = CASE WHEN @Amount IS NOT NULL THEN @Amount ELSE Amount END,
+            Status      = CASE WHEN @Status IS NOT NULL THEN @Status ELSE Status END
         WHERE 
             InvoiceID = @InvoiceID
             AND (DELETE_FLG IS NULL OR DELETE_FLG = 0);
