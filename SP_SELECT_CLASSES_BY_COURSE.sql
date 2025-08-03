@@ -13,7 +13,8 @@ BEGIN
 
     SELECT
         cl.ClassID,
-        cl.ClassName
+        cl.ClassName,
+		Status
     FROM CLASS cl
     WHERE cl.course_id = @CourseID;
 END
