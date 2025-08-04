@@ -35,9 +35,28 @@ BEGIN
             INSERT (AttendanceID, Class_ScheID, StudentID, Status, RecordedTime, RecordedBy, Notes, DELETE_FLG)
             VALUES (NEWID(), @ClassScheduleID, source.StudentID, source.Status, GETDATE(), @RecordedBy, source.Notes, 0);
 
+        -- Đánh dấu buổi học đã diễn ra
         UPDATE CLASS_SCHEDULE
         SET Status = 1
         WHERE Class_ScheID = @ClassScheduleID;
+
+        -- Chỉ cộng giờ dạy nếu chưa có bản ghi Payroll cho buổi này
+        IF NOT EXISTS (
+            SELECT 1
+            FROM Payroll
+            WHERE ClassScheduleID = @ClassScheduleID
+            AND TeacherID = @RecordedBy
+        )
+        BEGIN
+            DECLARE @teachingDate DATE;
+
+            SELECT @teachingDate = CAST(StartTime AS DATE)
+            FROM CLASS_SCHEDULE
+            WHERE Class_ScheID = @ClassScheduleID;
+
+            INSERT INTO Payroll (PayrollID, TeacherID, TeachingHours, RecordDate, ClassScheduleID)
+            VALUES (NEWID(), @RecordedBy, 2.0, @teachingDate, @ClassScheduleID);
+        END
 
         COMMIT TRANSACTION;
     END TRY
