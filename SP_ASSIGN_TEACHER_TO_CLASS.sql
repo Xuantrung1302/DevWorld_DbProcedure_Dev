@@ -5,7 +5,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[SP_ASSIGN_TEACHER_TO_CLASS]
+CREATE or alter PROCEDURE [dbo].[SP_ASSIGN_TEACHER_TO_CLASS]
     @ClassID UNIQUEIDENTIFIER,
     @TeacherID VARCHAR(10)
 AS
@@ -39,7 +39,8 @@ BEGIN
         END
 
         UPDATE CLASS
-        SET TeacherID = @TeacherID
+        SET TeacherID = @TeacherID,
+			Status = 1
         WHERE ClassID = @ClassID;
 
         COMMIT TRANSACTION;
@@ -52,3 +53,4 @@ BEGIN
     END CATCH
 END
 GO
+
