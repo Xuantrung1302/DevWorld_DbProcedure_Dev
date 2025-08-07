@@ -8,8 +8,8 @@ CREATE OR ALTER PROCEDURE [SP_GET_COURSES_BY_STUDENT]
 AS
 BEGIN
 	SELECT DISTINCT
-		CO.course_id,
-		CO.course_name,
+		CO.course_id AS CourseID,
+		CO.course_name AS CourseName,
 		SU.SubjectID,
 		SU.SubjectName
 	FROM CLASS_ENROLLMENT CE
