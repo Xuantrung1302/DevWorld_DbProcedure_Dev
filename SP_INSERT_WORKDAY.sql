@@ -3,7 +3,7 @@
     @RecordDate DATE
 AS
 BEGIN
-    SET NOCOUNT ON;
+    --SET NOCOUNT ON;
 
     -- Kiểm tra đã có công hôm nay chưa
     IF NOT EXISTS (

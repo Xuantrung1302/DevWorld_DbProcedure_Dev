@@ -48,6 +48,7 @@ BEGIN
             cs.DayOfWeek,
             cs.StartTime,
             cs.EndTime,
+			c.Room,
             sm.SemesterID,
             sm.SemesterName,
             cr.course_id AS CourseID,
@@ -68,3 +69,4 @@ BEGIN
 END
 GO
 
+--exec SP_GET_CLASS_SCHEDULE '1d28aea2-8a38-4bde-b06d-c5c209e098d0', '3915a649-d8e2-4151-9ab8-508b6de3176f'
