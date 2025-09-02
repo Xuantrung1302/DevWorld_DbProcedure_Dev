@@ -8,17 +8,19 @@ BEGIN
             @DoanhThu decimal(18,2) = 0;
 
     -- Tính chi phí cho giảng viên
-    SELECT @Chi = @Chi + SUM(p.TeachingHours * t.Salary)
-    FROM dbo.Payroll p
-    INNER JOIN dbo.TEACHER t ON p.TeacherID = t.TeacherID
-    WHERE YEAR(p.RecordDate) = @Year;
+SELECT @Chi = @Chi + ISNULL(SUM(p.TeachingHours * t.Salary), 0)
+FROM dbo.Payroll p
+INNER JOIN dbo.TEACHER t ON p.TeacherID = t.TeacherID
+WHERE YEAR(p.RecordDate) = @Year;
+
 
     -- Tính chi phí cho nhân viên (theo ngày công WorkDays)
-    SELECT @Chi = @Chi + SUM(e.Salary)
-    FROM dbo.Payroll p
-    INNER JOIN dbo.EMPLOYEE e ON p.EmployeeID = e.EmployeeID
-    WHERE YEAR(p.RecordDate) = @Year
-      AND p.WorkDays = 1;
+SELECT @Chi = @Chi + ISNULL(SUM(p.WorkDays / 30.0 * e.Salary), 0)
+FROM dbo.Payroll p
+INNER JOIN dbo.EMPLOYEE e ON p.EmployeeID = e.EmployeeID
+WHERE YEAR(p.RecordDate) = @Year
+  AND p.WorkDays = 1;;
+
 
     -- Tính doanh thu từ hóa đơn đã thanh toán
     SELECT @DoanhThu = SUM(i.Amount)
@@ -30,8 +32,7 @@ BEGIN
     SELECT 
         @Year AS Nam,
         ISNULL(@Chi,0) AS TongChi,
-        ISNULL(@DoanhThu,0) AS TongDoanhThu,
-        ISNULL(@DoanhThu,0) - ISNULL(@Chi,0) AS LoiNhuan;
+        ISNULL(@DoanhThu,0) AS TongDoanhThu
 END;
 
---exec SP_GetFinancialReportByYear 2025
+--exec SP_GetFinancialReportByYear 2024

@@ -65,7 +65,7 @@ BEGIN
         WHERE PCS.PassedCount = SC.TotalSubjects
     )
 
-    SELECT 
+    SELECT TOP 5
         C.course_id AS CourseID,
         C.course_name AS CourseName,
         SPCY.Year,

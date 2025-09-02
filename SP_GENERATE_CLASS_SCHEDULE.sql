@@ -1,4 +1,4 @@
-USE [DEV_ACADEMY]
+﻿USE [DEV_ACADEMY]
 GO
 alter PROCEDURE SP_GENERATE_CLASS_SCHEDULE
     @ClassID UNIQUEIDENTIFIER
@@ -24,13 +24,18 @@ BEGIN
     FROM CLASS 
     WHERE ClassID = @ClassID;
 
-    DECLARE semester_cursor CURSOR FOR
-    SELECT DISTINCT S.SemesterID, S.StartDate, S.EndDate
-    FROM CLASS C
-    JOIN Course CO ON C.course_id = CO.course_id
-    JOIN SEMESTER S ON S.course_id = CO.course_id
-    WHERE C.ClassID = @ClassID
-    ORDER BY S.StartDate;
+	DECLARE @CurrentYear INT = YEAR(GETDATE());
+
+	DECLARE semester_cursor CURSOR FOR
+		SELECT DISTINCT S.SemesterID, S.StartDate, S.EndDate
+		FROM CLASS C
+		JOIN Course CO ON C.course_id = CO.course_id
+		JOIN SEMESTER S ON S.course_id = CO.course_id
+		WHERE C.ClassID = @ClassID
+		  AND YEAR(S.StartDate) = @CurrentYear   -- chỉ lấy kỳ có năm hiện tại
+		ORDER BY S.StartDate;
+
+
 
     OPEN semester_cursor;
     FETCH NEXT FROM semester_cursor INTO @SemesterID, @SemesterStart, @SemesterEnd;
@@ -88,3 +93,5 @@ BEGIN
     DEALLOCATE semester_cursor;
 END
 GO
+
+
